@@ -1,0 +1,93 @@
+------------------------------------------------------------
+#First set "create" in "application.properties" for 3 microservices to create new MySQL tables
+spring.jpa.hibernate.ddl-auto=create
+-------------------------------------------------------------
+#Run testing on Web browser
+# Books Microservice port:8200
+#ADD
+http://localhost:8200/books/add?title=T1&firstname=AF1&lastname=AL1&genres=g1&pageCount=111
+http://localhost:8200/books/add?title=T2&firstname=AF2&lastname=AL2&genres=g2,g3&pageCount=222
+http://localhost:8200/books/add?title=T3&firstname=AF2&lastname=AL2&genres=g1,g4&pageCount=333
+http://localhost:8200/books/add?title=T4&firstname=AF3&lastname=AL3&genres=g5,g6&pageCount=444
+
+http://localhost:8200/books/add?title=T3&firstname=AF2&lastname=AL2&genres=g1,g4&pageCount=333
+The book with title: [T3] by author [AF2 AL2] has already been in the database. So, the addition is canceled.
+
+http://localhost:8200/books/add?title=T3&firstname=AF4&lastname=AL4&genres=g7&pageCount=555
+A new book by a new author has just been added to the database!
+
+#List all books
+http://localhost:8200/books/list
+[{"id":1,"title":"T1","author":{"firstname":"AF1","lastname":"AL1"},"pageCount":111,"genres":[{"name":"g1"}]},
+{"id":2,"title":"T2","author":{"firstname":"AF2","lastname":"AL2"},"pageCount":222,"genres":[{"name":"g2"},{"name":"g3"}]},
+{"id":3,"title":"T3","author":{"firstname":"AF2","lastname":"AL2"},"pageCount":333,"genres":[{"name":"g1"},{"name":"g4"}]},
+{"id":4,"title":"T4","author":{"firstname":"AF3","lastname":"AL3"},"pageCount":444,"genres":[{"name":"g5"},{"name":"g6"}]}]
+
+#Get an individual book
+http://localhost:8200/books/find?id=3
+[{"id":3,"title":"T3","author":{"firstname":"AF2","lastname":"AL2"},"pageCount":333,"genres":[{"name":"g1"},{"name":"g4"}]}]
+
+http://localhost:8200/books/find?title=T4
+[{"id":4,"title":"T4","author":{"firstname":"AF3","lastname":"AL3"},"pageCount":444,"genres":[{"name":"g5"},{"name":"g6"}]}]
+
+http://localhost:8200/books/find?title=T2&author=AF2,AL2
+[{"id":2,"title":"T2","author":{"firstname":"AF2","lastname":"AL2"},"pageCount":222,"genres":[{"name":"g2"},{"name":"g3"}]}]
+
+---------------------------------------------------------------
+#Run testing on Web browser
+# Borrowers Microservice port:8202
+
+#ADD
+http://localhost:8202/borrowers/add?firstname=BF1&lastname=BL1&borrowingLimit=11
+http://localhost:8202/borrowers/add?firstname=BF2&lastname=BL2&borrowingLimit=22
+http://localhost:8202/borrowers/add?firstname=BF3&lastname=BL3&borrowingLimit=33
+
+http://localhost:8202/borrowers/add?firstname=BF3&lastname=BL3&borrowingLimit=44
+The name: BF3 BL3 has already been in the database. So, the addition is canceled.
+
+#List all books
+http://localhost:8202/borrowers/list
+[{"id":1,"firstname":"BF1","lastname":"BL1","borrowingLimit":11},
+{"id":2,"firstname":"BF2","lastname":"BL2","borrowingLimit":22},
+{"id":3,"firstname":"BF3","lastname":"BL3","borrowingLimit":33}]
+
+#Get an individual borrower
+http://localhost:8202/borrowers/find?id=2
+[{"id":2,"firstname":"BF2","lastname":"BL2","borrowingLimit":22}]
+
+http://localhost:8202/borrowers/find?firstname=BF3&lastname=BL3
+[{"id":3,"firstname":"BF3","lastname":"BL3","borrowingLimit":33}]
+
+http://localhost:8202/borrowers/find?firstname=BF4&lastname=BL4
+[]
+
+----------------------------------------------------------------
+#Run testing on Web browser
+# LoanOfBorrower Microservice port:8201
+
+http://localhost:8201/loans/add?borrowerId=1&bookId=1&borrowingDate=2020-10-20&returningDate=2020-11-24
+New loan has just been added to the database.
+
+http://localhost:8201/loans/add?borrowerId=1&bookId=2&borrowingDate=2020-10-24&returningDate=2020-11-24
+New loan has just been added to the database.
+
+http://localhost:8201/loans/add?borrowerId=1&bookId=2&borrowingDate=2020-10-24&returningDate=2020-11-28
+The loan has already been in the database. So, the addition is canceled.
+
+http://localhost:8201/loans/list
+[{"id":1,"borrowerId":1,"bookId":1,"borrowingDate":"2020-10-20","returningDate":"2020-11-24"},
+{"id":2,"borrowerId":1,"bookId":2,"borrowingDate":"2020-10-24","returningDate":"2020-11-24"}]
+
+http://localhost:8201/loans/find?bookId=2
+[{"id":2,"borrowerId":1,"bookId":2,"borrowingDate":"2020-10-24","returningDate":"2020-11-24"}]
+
+http://localhost:8201/loans/find?borrowerId=1
+[{"id":1,"borrowerId":1,"bookId":1,"borrowingDate":"2020-10-20","returningDate":"2020-11-24"},
+{"id":2,"borrowerId":1,"bookId":2,"borrowingDate":"2020-10-24","returningDate":"2020-11-24"}]
+
+http://localhost:8201/loans/find?borrowerId=2
+[]
+
+
+
+
